@@ -9,7 +9,11 @@ namespace Spotcc.Services.Models
     {
         public PlayCount()
         {
-            Date = DateTime.Now.Date;
+            bool isWindows = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows);
+            var asiaTimeZone = isWindows ? TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time") : TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
+
+            Date = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, asiaTimeZone).Date;
+            //Date = DateTime.Now.Date;
             Delta = 0;
         }
 
