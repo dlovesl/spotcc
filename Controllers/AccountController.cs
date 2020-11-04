@@ -34,7 +34,7 @@ namespace SpotCC.Controllers
                 OrderPreStreams = a.OrderPreStreams,
                 TotalStreams = a.TotalStreams,
                 Artists = a.Artists.Where(at => (int)at.StreamType == type).ToList()
-            });
+            }).Where(d => d.Artists.Count() > 0);
             return resuts;
         }
     }
