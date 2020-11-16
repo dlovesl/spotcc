@@ -4,6 +4,7 @@ import Pre from './components/Pre.vue'
 import Free from './components/Free.vue'
 import FrameworksDownloads from "./components/FrameworksDownloads";
 import ArtistChart from './components/ArtistChart.vue'
+import AddEditArtist from './components/AddEditArtist.vue'
 
 Vue.use(VueRouter)
 
@@ -12,6 +13,7 @@ export const router = new VueRouter({
         {path: '/', component: FrameworksDownloads},
         {path: '/pre', component: Pre},
         {path: '/free', component: Free},
-        {path: '/chart', component: ArtistChart}
+        {path: '/chart', component: ArtistChart},
+        {path: '/artist', component: AddEditArtist}
     ]
 })

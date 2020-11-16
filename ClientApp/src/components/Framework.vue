@@ -59,7 +59,7 @@ export default {
     },
     info() {
       return {
-        label: this.currentInfo ? this.currentInfo.label : "weekly stream",
+        label: this.currentInfo ? this.currentInfo.label : "Stream stats",
         value: this.currentInfo ? this.currentInfo.value : this.weeklyDownloads,
       };
     },

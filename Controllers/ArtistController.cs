@@ -40,7 +40,14 @@ namespace SpotCC.Controllers
             return artist;
         }
 
-        [HttpPost]
+        [HttpGet("getall")]
+        public IEnumerable<Artist> GetAllArtists()
+        {
+            var artist = _artistRepo.GetAll();
+            return artist;
+        }
+
+        [HttpPost("create")]
         public IActionResult CreateArtist(Artist artist)
         {
             var error = string.Empty;
@@ -66,6 +73,73 @@ namespace SpotCC.Controllers
 
             artist = _artistRepo.Insert(artist);
             return CreatedAtAction(nameof(CreateArtist), new { artist }, artist);
+        }
+
+        [HttpPost("update")]
+        public IActionResult UpdateArtist(Artist artist)
+        {
+            var error = string.Empty;
+            if (artist == null)
+            {
+                error = $"Parameter '{nameof(artist)}' should not be null.";
+            }
+            else if (string.IsNullOrEmpty(artist.Name))
+            {
+                error = $"Artist name is required.";
+            }
+            else if (_accountRepo.FindFirst(a => a.Id == artist.AccountId) == null)
+            {
+                error = $"Account with Id: '{artist.AccountId}' is not existed.";
+            }
+
+            var currentArtist = GetArtist(artist.Id);
+
+            if (currentArtist == null)
+            {
+                error = $"Artist didn't existed.";
+            }
+            if (!string.IsNullOrEmpty(error))
+            {
+                _logger.LogDebug(error);
+                return BadRequest(new { error });
+            }
+
+            //fill data
+            currentArtist.AccountId = artist.AccountId;
+            currentArtist.Name = artist.Name;
+            currentArtist.SpotifyId = artist.SpotifyId;
+            currentArtist.StreamType = artist.StreamType;
+
+            var result = _artistRepo.Update(currentArtist);
+            return CreatedAtAction(nameof(UpdateArtist), new { result }, result);
+        }
+
+        [HttpPost("remove/{spotifyId}")]
+        public IActionResult RemoveArtist(string spotifyId)
+        {
+            var error = string.Empty;
+            if (string.IsNullOrWhiteSpace(spotifyId))
+            {
+                error = $"spotifyId should not be null.";
+            }
+
+            var currentArtist = GetArtist(spotifyId);
+
+            if (currentArtist == null)
+            {
+                error = $"Artist didn't existed.";
+            }
+            if (!string.IsNullOrEmpty(error))
+            {
+                _logger.LogDebug(error);
+                return BadRequest(new { error });
+            }
+
+            //soft delete
+            currentArtist.StreamType = Enum.StreamType.Removed;
+
+            _artistRepo.Update(currentArtist);
+            return Ok("REMOVED");
         }
     }
 }

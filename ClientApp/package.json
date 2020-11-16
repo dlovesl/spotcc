@@ -9,12 +9,14 @@
   },
   "dependencies": {
     "axios": "^0.19.2",
+    "buefy": "^0.9.4",
     "core-js": "^3.6.5",
     "sass": "^1.26.10",
     "sass-loader": "^9.0.3",
     "vue": "^2.6.11",
     "vue-axios": "^2.1.5",
     "vue-router": "^3.4.7",
+    "vue-select": "^3.10.8",
     "vue-trend-chart": "^0.15.2"
   },
   "devDependencies": {

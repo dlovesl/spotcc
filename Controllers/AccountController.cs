@@ -37,5 +37,45 @@ namespace SpotCC.Controllers
             }).Where(d => d.Artists.Count() > 0);
             return resuts;
         }
+
+        [HttpGet("{name}")]
+        public Account GetAccount(string name)
+        {
+            var account = _accountRepo.GetAll().FirstOrDefault(a => a.Name == name);
+            return account;
+        }
+
+        [HttpPost("update")]
+        public IActionResult UpdateAccount(Account account)
+        {
+            var error = string.Empty;
+            if (account == null)
+            {
+                error = $"Parameter '{nameof(account)}' should not be null.";
+            }
+            else if (_accountRepo.FindFirst(a => a.Name == account.Name) == null)
+            {
+                error = $"Account with name: '{account.Name}' is not existed.";
+            }
+
+            var currentAccount = GetAccount(account.Name);
+
+            if (currentAccount == null)
+            {
+                error = $"Account didn't existed.";
+            }
+            if (!string.IsNullOrEmpty(error))
+            {
+                _logger.LogDebug(error);
+                return BadRequest(new { error });
+            }
+
+            //fill data
+            currentAccount.OrdeFreeStreams = account.OrdeFreeStreams;
+            currentAccount.OrderPreStreams = account.OrderPreStreams;
+
+            var result = _accountRepo.Update(currentAccount);
+            return CreatedAtAction(nameof(UpdateAccount), new { result }, result);
+        }
     }
 }

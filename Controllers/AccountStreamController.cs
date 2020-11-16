@@ -42,6 +42,13 @@ namespace SpotCC.Controllers
         }
 
         [HttpGet("[action]")]
+        public IEnumerable<AccountStream> Last30Days(string name)
+        {
+            var days = DateTime.Now.AddDays(-30);
+            return GetPlayCountByDateRangeAndArtist(name, days);
+        }
+
+        [HttpGet("[action]")]
         public IEnumerable<AccountStream> Monthly()
         {
             var lastYear = DateTime.Now.AddYears(-1);
@@ -73,6 +80,30 @@ namespace SpotCC.Controllers
             }
 
             var playCounts = _repository.Get(p => p.Date >= from && p.Date <= to);
+
+            var accountStreams = playCounts.GroupBy(p => new { p.Account, p.StreamType })
+                            .Select(g => new AccountStream()
+                            {
+                                Account = g.Key.Account + "-" + g.Key.StreamType.ToString(),
+                                StreamInfos = g.GroupBy(i => i.Date)
+                                                .Select(i => new StreamInfo
+                                                {
+                                                    Day = i.Key.ToString("d"),
+                                                    Streams = i.Sum(p => p.Delta)
+                                                })
+                            }).Where(x => x.StreamInfos.Count() > 1);
+
+            return accountStreams;
+        }
+
+        private IEnumerable<AccountStream> GetPlayCountByDateRangeAndArtist(string artistName, DateTime from, DateTime? to = null)
+        {
+            if (!to.HasValue)
+            {
+                to = DateTime.Now;
+            }
+
+            var playCounts = _repository.Get(p => p.Date >= from && p.Date <= to && p.ArtistName == artistName);
 
             var accountStreams = playCounts.GroupBy(p => new { p.Account, p.StreamType })
                             .Select(g => new AccountStream()
