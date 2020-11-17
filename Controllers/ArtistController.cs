@@ -33,6 +33,13 @@ namespace SpotCC.Controllers
             return artist;
         }
 
+        [HttpGet("name/{name}")]
+        public Artist GetArtistByName(string name)
+        {
+            var artist = _artistRepo.FindFirst(a => a.Name == name);
+            return artist;
+        }
+
         [HttpGet("spotify/{spotifyId}")]
         public Artist GetArtist(string spotifyId)
         {
@@ -87,6 +94,10 @@ namespace SpotCC.Controllers
             {
                 error = $"Artist name is required.";
             }
+            else if (artist.Id <= 0)
+            {
+                error = $"Artist id is required.";
+            }
             else if (_accountRepo.FindFirst(a => a.Id == artist.AccountId) == null)
             {
                 error = $"Account with Id: '{artist.AccountId}' is not existed.";
@@ -110,7 +121,7 @@ namespace SpotCC.Controllers
             currentArtist.SpotifyId = artist.SpotifyId;
             currentArtist.StreamType = artist.StreamType;
 
-            var result = _artistRepo.Update(currentArtist);
+            var result = _artistRepo.UpdateParentOnly(currentArtist);
             return CreatedAtAction(nameof(UpdateArtist), new { result }, result);
         }
 

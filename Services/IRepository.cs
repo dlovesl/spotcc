@@ -13,6 +13,7 @@ namespace Spotcc.Services
     {
         T Insert(T model);
         T Update(T model);
+        T UpdateParentOnly(T model);
         bool Delete(T model);
         T Get(int pk);
         IList<T> Get(Expression<Func<T, bool>> predicate = null, bool recursive = false);
@@ -40,6 +41,12 @@ namespace Spotcc.Services
         public T Update(T model)
         {
             Context.UpdateWithChildren(model);
+            return model;
+        }
+
+        public T UpdateParentOnly(T model)
+        {
+            Context.Update(model);
             return model;
         }
 

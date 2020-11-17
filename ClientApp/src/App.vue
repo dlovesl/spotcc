@@ -13,6 +13,8 @@
       <router-link to="/chart">Daily Stats</router-link>
       <span class="ht-icon">|</span>
       <router-link to="/artist">Modify Artist</router-link>
+      <span class="ht-icon">|</span>
+      <router-link to="/account">Modify Account</router-link>
     </div>
     <main class="demo__examples">
       <div class="demo__example">

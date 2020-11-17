@@ -74,7 +74,7 @@ namespace SpotCC.Controllers
             currentAccount.OrdeFreeStreams = account.OrdeFreeStreams;
             currentAccount.OrderPreStreams = account.OrderPreStreams;
 
-            var result = _accountRepo.Update(currentAccount);
+            var result = _accountRepo.UpdateParentOnly(currentAccount);
             return CreatedAtAction(nameof(UpdateAccount), new { result }, result);
         }
     }
