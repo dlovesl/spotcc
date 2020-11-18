@@ -31,7 +31,7 @@ namespace Spotcc.Services
                 {
                     var latestPlayCount = _playCountRepo.Get(p => p.ArtistName == playCountModel.ArtistName && p.Date < playCountModel.Date)
                                                         .OrderByDescending(p => p.Date).FirstOrDefault();
-                    if (latestPlayCount != null)
+                    if (latestPlayCount != null && playCountModel.Playcount > 0)
                     {
                         playCountModel.Delta = playCountModel.Playcount - latestPlayCount.Playcount;
                     }

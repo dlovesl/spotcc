@@ -53,11 +53,6 @@ namespace Spotcc.Jobs
 
                     if (artistInfoResult.Success && artistInsightResult.Success)
                     {
-                        if (artistInfoResult.ArtistInfo.TotalPlays == 0)
-                        {
-                            return null;
-                        }
-
                         var playCount = new PlayCount
                         {
                             Account = account.Account,
