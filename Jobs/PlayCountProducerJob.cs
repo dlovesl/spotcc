@@ -1,4 +1,5 @@
-﻿using Spotcc.Services;
+﻿using Microsoft.Extensions.Logging;
+using Spotcc.Services;
 using Spotcc.Services.Models;
 using System;
 using System.Collections.Generic;
@@ -13,12 +14,14 @@ namespace Spotcc.Jobs
         private readonly IPlayCountProducer _playCountProducer;
         private readonly ILibrespotApi _librespotApi;
         private readonly IRepository<Account> _accountRepo;
+        protected readonly ILogger<PlayCountProducerJob> _logger;
 
-        public PlayCountProducerJob(IPlayCountProducer playCountProducer, ILibrespotApi librespotApi, IRepository<Account> accountRepo)
+        public PlayCountProducerJob(IPlayCountProducer playCountProducer, ILibrespotApi librespotApi, IRepository<Account> accountRepo, ILogger<PlayCountProducerJob> logger)
         {
             _playCountProducer = playCountProducer;
             _librespotApi = librespotApi;
             _accountRepo = accountRepo;
+            _logger = logger;
         }
 
         public async Task RunAsync()
@@ -53,6 +56,7 @@ namespace Spotcc.Jobs
 
                     if (artistInfoResult.Success && artistInsightResult.Success)
                     {
+                        _logger.LogDebug($"add playcount for artist: {artistInfoResult.ArtistInfo.Name} - playcount: {artistInsightResult.ArtistInsights.FollowerCount}");
                         var playCount = new PlayCount
                         {
                             Account = account.Account,

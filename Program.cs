@@ -7,6 +7,8 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Events;
 
 namespace SpotCC
 {
@@ -14,11 +16,20 @@ namespace SpotCC
     {
         public static void Main(string[] args)
         {
+            Log.Logger = new LoggerConfiguration()
+           .MinimumLevel.Debug()
+           .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+           .Filter.ByIncludingOnly(evt => evt.Level == LogEventLevel.Debug)
+           .Enrich.FromLogContext()
+           .WriteTo.Logger(l => l.WriteTo.File(@"Logs\spotcc_.txt", rollingInterval: RollingInterval.Day))
+           .CreateLogger();
+
             CreateWebHostBuilder(args).Build().Run();
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+                .UseStartup<Startup>()
+                .UseSerilog();
     }
 }

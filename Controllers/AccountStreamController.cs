@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Spotcc.Services;
 using Spotcc.Services.Models;
 using SpotCC.Enum;
@@ -14,10 +15,12 @@ namespace SpotCC.Controllers
     public class AccountStreamController : ControllerBase
     {
         private readonly IRepository<PlayCount> _repository;
+        protected readonly ILogger<AccountStreamController> _logger;
 
-        public AccountStreamController(IRepository<PlayCount> repository)
+        public AccountStreamController(IRepository<PlayCount> repository, ILogger<AccountStreamController> logger)
         {
             _repository = repository;
+            _logger = logger;
         }
 
         [HttpGet("[action]")]
@@ -42,10 +45,15 @@ namespace SpotCC.Controllers
         }
 
         [HttpGet("[action]")]
-        public IEnumerable<AccountStream> Last30Days(string name)
+        public IEnumerable<AccountStream> MonthAndYear(string name, int month, int year)
         {
-            var days = DateTime.Now.AddDays(-30);
-            return GetPlayCountByDateRangeAndArtist(name, days);
+            month = month == 0 ? DateTime.Now.Month : month;
+            year = year == 0 ? DateTime.Now.Year : year;
+
+            var firstDay = new DateTime(year, month, 1);
+            var lastDay = new DateTime(year, month, DateTime.DaysInMonth(year, month));
+
+            return GetPlayCountByDateRangeAndArtist(name, firstDay, lastDay);
         }
 
         [HttpGet("[action]")]
@@ -78,7 +86,7 @@ namespace SpotCC.Controllers
             {
                 to = DateTime.Now;
             }
-
+            //_logger.LogDebug($"test");
             var playCounts = _repository.Get(p => p.Date >= from && p.Date <= to);
 
             var accountStreams = playCounts.GroupBy(p => new { p.Account, p.StreamType })

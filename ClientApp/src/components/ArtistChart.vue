@@ -1,7 +1,37 @@
 <template>
   <div class="single-artist">
-    <v-select v-model="selected" v-on:change="onChange($event)" 
+    <div class="control margin-bottom">
+        <div class="select">
+            <select v-model="accountId" @change="onAccountChange()">
+                <option disabled value="">Please select account</option>
+                <option v-for="acc in accounts" :key="acc.id" :value="acc.id">
+                    {{acc.text}}
+                </option>
+            </select>
+        </div>
+        <div class="select margin-left">
+            <select v-model="selectMonth">
+                <option disabled value="">Please select month</option>
+                <option v-for="acc in months" :key="acc.id" :value="acc.id">
+                    {{acc.text}}
+                </option>
+            </select>
+        </div>
+        <div class="select margin-left">
+            <select v-model="selectYear">
+                <option disabled value="">Please select year</option>
+                <option v-for="acc in years" :key="acc.id" :value="acc.id">
+                    {{acc.text}}
+                </option>
+            </select>
+        </div>
+    </div>
+    <!-- <v-select v-model="selected" v-on:change="onChange($event)" 
         :options="options" :reduce="t => t.name" label="name" :value="selected" @input="onChange"
+        placeholder="Please select an Artist">
+    </v-select> -->
+    <v-select v-model="selected"
+        :options="options" :reduce="t => t.name" label="name" :value="selected"
         placeholder="Please select an Artist">
       <!-- <option disabled value="">Please select one</option>
         <option v-for="option in options" :key="option.id" v-bind:value="option.name">
@@ -9,7 +39,7 @@
         </option> -->
     </v-select>
     <!-- <span>Selected: {{ selected }}</span> -->
-
+    <input class="button is-primary margin-bottom margin-top" type="submit" @click.prevent="onChange" value="Get Stats"/>
     <template>
       <div class="frameworks">
         <framework
@@ -34,6 +64,35 @@ export default {
       data: null,
       selected: '',
       options: [],
+      accountId:'',
+      selectMonth:'',
+      selectYear:'',
+      accounts: [
+        {id: 1, text: 'Adam'},
+        {id: 2, text: 'Beck'},
+        {id: 3, text: 'HH'},
+        {id: 4, text: 'V'},
+        {id: 5, text: 'Beck - Free'},
+      ],
+      months: [
+        {id: 1, text: '1'},
+        {id: 2, text: '2'},
+        {id: 3, text: '3'},
+        {id: 4, text: '4'},
+        {id: 5, text: '5'},
+        {id: 6, text: '6'},
+        {id: 7, text: '7'},
+        {id: 8, text: '8'},
+        {id: 9, text: '9'},
+        {id: 10, text: '10'},
+        {id: 11, text: '11'},
+        {id: 12, text: '12'},
+      ],
+      years: [
+        {id: 2020, text: '2020'},
+        {id: 2021, text: '2021'},
+        {id: 2022, text: '2022'},
+      ],
     };
   },
   computed: {
@@ -50,10 +109,21 @@ export default {
     },
   },
   methods: {
+    onAccountChange() {
+      console.log(this.accountId);
+      this.$http
+        .get(`http://139.180.139.12/api/artist/account/` + this.accountId)
+        .then((res) => {
+          this.options = res.data;
+          this.selected = '';
+        })
+        .catch((error) => console.log(error));
+    },
     onChange() {
       console.log(this.selected);
+      if(this.selected == '' || this.selectMonth == '' || this.selectYear == '') return;
       this.$http
-        .get(`http://139.180.139.12/api/accountstream/last30days?name=` + this.selected)
+        .get(`http://139.180.139.12/api/accountstream/MonthAndYear?name=` + this.selected + "&month=" + this.selectMonth + "&year=" + this.selectYear)
         .then((res) => {
           this.data = res.data;
         })
@@ -69,12 +139,23 @@ export default {
     },
   },
   mounted() {
-    this.fetchData();
+    //this.fetchData();
   },
 };
 </script>
 
 <style lang="scss">
+.margin-top {
+  margin-top: 15px;
+}
+
+.margin-bottom {
+  margin-bottom: 15px;
+}
+.margin-left {
+  margin-left: 5px;
+}
+
 .single-artist .frameworks {
   display: flex;
   flex-wrap: wrap;

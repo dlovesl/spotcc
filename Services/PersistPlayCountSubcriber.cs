@@ -26,6 +26,7 @@ namespace Spotcc.Services
         {
             if (playCountModel != null)
             {
+                _logger.LogDebug($"get playcount artist: {playCountModel.ArtistName} - date {playCountModel.Date}");
                 var playCount = _playCountRepo.FindFirst(p => p.ArtistName == playCountModel.ArtistName && p.Date == playCountModel.Date);
                 if (playCount == null)
                 {
@@ -48,6 +49,10 @@ namespace Spotcc.Services
 
                     account.TotalStreams = account.Artists.Sum(a => a.TotalStreams);
                     _accountRepo.Update(account);
+                }
+                else
+                {
+                    _logger.LogDebug($"Playcount artist: {playCountModel.ArtistName} - date {playCountModel.Date} is NULL");
                 }
             }
         }

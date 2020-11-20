@@ -10,7 +10,7 @@
       <span class="ht-icon">|</span>
       <router-link to="/free">FREE</router-link>
       <span class="ht-icon">|</span>
-      <router-link to="/chart">Daily Stats</router-link>
+      <router-link to="/chart">Monthly Stats</router-link>
       <span class="ht-icon">|</span>
       <router-link to="/artist">Modify Artist</router-link>
       <span class="ht-icon">|</span>

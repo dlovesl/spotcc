@@ -54,6 +54,13 @@ namespace SpotCC.Controllers
             return artist;
         }
 
+        [HttpGet("account/{id}")]
+        public IEnumerable<Artist> GetAllArtistsByAccountId(int id)
+        {
+            var artist = _artistRepo.GetAll().Where(x => x.AccountId == id).OrderBy(d => d.Name);
+            return artist;
+        }
+
         [HttpPost("create")]
         public IActionResult CreateArtist(Artist artist)
         {
