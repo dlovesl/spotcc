@@ -11,7 +11,7 @@
         </div>
         <div class="select margin-left">
             <select v-model="selectMonth">
-                <option disabled value="">Please select month</option>
+                <!-- <option disabled value="">Please select month</option> -->
                 <option v-for="acc in months" :key="acc.id" :value="acc.id">
                     {{acc.text}}
                 </option>
@@ -19,7 +19,7 @@
         </div>
         <div class="select margin-left">
             <select v-model="selectYear">
-                <option disabled value="">Please select year</option>
+                <!-- <option disabled value="">Please select year</option> -->
                 <option v-for="acc in years" :key="acc.id" :value="acc.id">
                     {{acc.text}}
                 </option>
@@ -40,6 +40,7 @@
     </v-select>
     <!-- <span>Selected: {{ selected }}</span> -->
     <input class="button is-primary margin-bottom margin-top" type="submit" @click.prevent="onChange" value="Get Stats"/>
+    <label class="label">Total Streams: {{this.totalStreams}}</label>
     <template>
       <div class="frameworks">
         <framework
@@ -65,10 +66,12 @@ export default {
       selected: '',
       options: [],
       accountId:'',
-      selectMonth:'',
-      selectYear:'',
+      totalStreams: 0,
+      selectMonth: 0,
+      selectYear: 0,
       accounts: [],
       months: [
+        {id: 0, text: 'Please select month'},
         {id: 1, text: '1'},
         {id: 2, text: '2'},
         {id: 3, text: '3'},
@@ -83,6 +86,7 @@ export default {
         {id: 12, text: '12'},
       ],
       years: [
+        {id: 0, text: 'Please select year'},
         {id: 2020, text: '2020'},
         {id: 2021, text: '2021'},
         {id: 2022, text: '2022'},
@@ -115,11 +119,14 @@ export default {
     },
     onChange() {
       console.log(this.selected);
-      if(this.selected == '' || this.selectMonth == '' || this.selectYear == '') return;
+      if(this.selected == '') return;
       this.$http
         .get(`http://139.180.139.12/api/accountstream/MonthAndYear?name=` + this.selected + "&month=" + this.selectMonth + "&year=" + this.selectYear)
         .then((res) => {
           this.data = res.data;
+          if(res.data[0]){
+            this.totalStreams = res.data[0].totalStreams;
+          }
         })
         .catch((error) => console.log(error));
     },

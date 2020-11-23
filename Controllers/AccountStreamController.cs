@@ -48,11 +48,21 @@ namespace SpotCC.Controllers
         [HttpGet("[action]")]
         public IEnumerable<AccountStream> MonthAndYear(string name, int month, int year)
         {
-            month = month == 0 ? DateTime.Now.Month : month;
-            year = year == 0 ? DateTime.Now.Year : year;
+            DateTime firstDay;
+            DateTime? lastDay;
 
-            var firstDay = new DateTime(year, month, 1);
-            var lastDay = new DateTime(year, month, DateTime.DaysInMonth(year, month));
+            if (month == 0 && year == 0)
+            {
+                firstDay = new DateTime(2020, 1, 1);
+                lastDay = null;
+            }
+            else
+            {
+                month = month == 0 ? DateTime.Now.Month : month;
+                year = year == 0 ? DateTime.Now.Year : year;
+                firstDay = new DateTime(year, month, 1);
+                lastDay = new DateTime(year, month, DateTime.DaysInMonth(year, month));
+            }
 
             return GetPlayCountByDateRangeAndArtist(name, firstDay, lastDay);
         }
@@ -118,6 +128,7 @@ namespace SpotCC.Controllers
                             .Select(g => new AccountStream()
                             {
                                 Account = g.Key.Account + "-" + g.Key.StreamType.ToString(),
+                                TotalStreams = g.Max(s => s.Playcount),
                                 StreamInfos = g.GroupBy(i => i.Date)
                                                 .Select(i => new StreamInfo
                                                 {
@@ -132,6 +143,7 @@ namespace SpotCC.Controllers
         public class AccountStream
         {
             public string Account { get; set; }
+            public float TotalStreams { get; set; }
             public IEnumerable<StreamInfo> StreamInfos { get; set; }
         }
 
