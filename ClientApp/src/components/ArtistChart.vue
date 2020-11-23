@@ -73,6 +73,7 @@ export default {
         {id: 3, text: 'HH'},
         {id: 4, text: 'V'},
         {id: 5, text: 'Beck - Free'},
+        {id: 6, text: 'Beck - Mix'},
       ],
       months: [
         {id: 1, text: '1'},

@@ -6,6 +6,7 @@ using SpotCC.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace SpotCC.Controllers
@@ -82,13 +83,13 @@ namespace SpotCC.Controllers
 
         private IEnumerable<AccountStream> GetPlayCountByDateRange(DateTime from, DateTime? to = null)
         {
-            if (!to.HasValue)
+            Expression<Func<PlayCount, bool>> predicate = p => p.Date >= from;
+            if (to.HasValue)
             {
-                to = DateTime.Now;
+                predicate = p => p.Date >= from && p.Date <= to;
             }
-            //_logger.LogDebug($"test");
-            var playCounts = _repository.Get(p => p.Date >= from && p.Date <= to);
 
+            var playCounts = _repository.Get(predicate);
             var accountStreams = playCounts.GroupBy(p => new { p.Account, p.StreamType })
                             .Select(g => new AccountStream()
                             {
@@ -106,13 +107,13 @@ namespace SpotCC.Controllers
 
         private IEnumerable<AccountStream> GetPlayCountByDateRangeAndArtist(string artistName, DateTime from, DateTime? to = null)
         {
-            if (!to.HasValue)
+            Expression<Func<PlayCount, bool>> predicate = p => p.ArtistName == artistName && p.Date >= from;
+            if (to.HasValue)
             {
-                to = DateTime.Now;
+                predicate = p => p.ArtistName == artistName && p.Date >= from && p.Date <= to;
             }
 
-            var playCounts = _repository.Get(p => p.Date >= from && p.Date <= to && p.ArtistName == artistName);
-
+            var playCounts = _repository.Get(predicate);
             var accountStreams = playCounts.GroupBy(p => new { p.Account, p.StreamType })
                             .Select(g => new AccountStream()
                             {
