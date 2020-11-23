@@ -45,6 +45,13 @@ namespace SpotCC.Controllers
             return account;
         }
 
+        [HttpGet("getall")]
+        public IEnumerable<Account> GetAllAccounts()
+        {
+            var acc = _accountRepo.GetAll();
+            return acc;
+        }
+
         [HttpPost("update")]
         public IActionResult UpdateAccount(Account account)
         {

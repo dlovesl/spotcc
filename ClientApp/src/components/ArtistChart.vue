@@ -5,7 +5,7 @@
             <select v-model="accountId" @change="onAccountChange()">
                 <option disabled value="">Please select account</option>
                 <option v-for="acc in accounts" :key="acc.id" :value="acc.id">
-                    {{acc.text}}
+                    {{acc.name}}
                 </option>
             </select>
         </div>
@@ -67,14 +67,7 @@ export default {
       accountId:'',
       selectMonth:'',
       selectYear:'',
-      accounts: [
-        {id: 1, text: 'Adam'},
-        {id: 2, text: 'Beck'},
-        {id: 3, text: 'HH'},
-        {id: 4, text: 'V'},
-        {id: 5, text: 'Beck - Free'},
-        {id: 6, text: 'Beck - Mix'},
-      ],
+      accounts: [],
       months: [
         {id: 1, text: '1'},
         {id: 2, text: '2'},
@@ -132,15 +125,15 @@ export default {
     },
     fetchData() {
       this.$http
-        .get(`http://139.180.139.12/api/artist/getall`)
+        .get(`http://139.180.139.12/api/account/getall`)
         .then((res) => {
-          this.options = res.data;
+          this.accounts = res.data;
         })
         .catch((error) => console.log(error));
     },
   },
   mounted() {
-    //this.fetchData();
+    this.fetchData();
   },
 };
 </script>
