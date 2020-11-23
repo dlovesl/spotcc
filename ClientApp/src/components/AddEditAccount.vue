@@ -13,8 +13,8 @@
                           <div class="select">
                               <select v-model="form.name" @change="onChange()">
                                   <option disabled value="">Please select one</option>
-                                  <option v-for="acc in accounts" :key="acc.text" :value="acc.text">
-                                      {{acc.text}}
+                                  <option v-for="acc in accounts" :key="acc.name" :value="acc.name">
+                                      {{acc.name}}
                                   </option>
                               </select>
                           </div>
@@ -74,14 +74,7 @@ export default {
             name: ""
         },
       showSubmitFeedback: false,
-      accounts: [
-        {id: 1, text: 'Adam'},
-        {id: 2, text: 'Beck'},
-        {id: 3, text: 'HH'},
-        {id: 4, text: 'V'},
-        {id: 5, text: 'Beck - Free'},
-        {id: 6, text: 'Beck - Mix'},
-      ],
+      accounts: [],
     };
   },
   computed: {
@@ -113,9 +106,17 @@ export default {
         })
         .catch((error) => console.log(error));
     },
+    fetchData() {
+      this.$http
+        .get(`http://139.180.139.12/api/account/getall`)
+        .then((res) => {
+          this.accounts = res.data;
+        })
+        .catch((error) => console.log(error));
+    },
   },
   mounted() {
-    
+    this.fetchData();
   },
 };
 </script>

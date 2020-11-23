@@ -36,7 +36,7 @@
                           <div class="select">
                               <select v-model="form.accountId">
                                   <option v-for="acc in accounts" :key="acc.id" :value="acc.id">
-                                      {{acc.text}}
+                                      {{acc.name}}
                                   </option>
                               </select>
                           </div>
@@ -100,14 +100,7 @@ export default {
             id:0
         },
       showSubmitFeedback: false,
-      accounts: [
-        {id: 1, text: 'Adam'},
-        {id: 2, text: 'Beck'},
-        {id: 3, text: 'HH'},
-        {id: 4, text: 'V'},
-        {id: 5, text: 'Beck - Free'},
-        {id: 6, text: 'Beck - Mix'},
-      ],
+      accounts: [],
     };
   },
   computed: {
@@ -164,9 +157,17 @@ export default {
         })
         .catch((error) => console.log(error));
     },
+    fetchData() {
+      this.$http
+        .get(`http://139.180.139.12/api/account/getall`)
+        .then((res) => {
+          this.accounts = res.data;
+        })
+        .catch((error) => console.log(error));
+    },
   },
   mounted() {
-    
+    this.fetchData();
   },
 };
 </script>
