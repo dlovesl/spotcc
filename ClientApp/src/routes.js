@@ -6,6 +6,7 @@ import FrameworksDownloads from "./components/FrameworksDownloads";
 import ArtistChart from './components/ArtistChart.vue'
 import AddEditArtist from './components/AddEditArtist.vue'
 import AddEditAccount from './components/AddEditAccount.vue'
+import ArtistDownloadChart from './components/ArtistDownloadChart.vue'
 
 Vue.use(VueRouter)
 
@@ -16,6 +17,7 @@ export const router = new VueRouter({
         {path: '/free', component: Free},
         {path: '/chart', component: ArtistChart},
         {path: '/artist', component: AddEditArtist},
-        {path: '/account', component: AddEditAccount}
+        {path: '/account', component: AddEditAccount},
+        {path: '/customchart', component: ArtistDownloadChart}
     ]
 })

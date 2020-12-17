@@ -12,6 +12,8 @@
       <span class="ht-icon">|</span>
       <router-link to="/chart">Monthly Stats</router-link>
       <span class="ht-icon">|</span>
+      <router-link to="/customchart">Custom Stats</router-link>
+      <span class="ht-icon">|</span>
       <router-link to="/artist">Modify Artist</router-link>
       <span class="ht-icon">|</span>
       <router-link to="/account">Modify Account</router-link>
@@ -94,7 +96,7 @@ body {
     }
     &-container {
       width: 100%;
-      max-width: 800px;
+      max-width: 1000px;
       margin: 0 auto;
     }
     &-header {

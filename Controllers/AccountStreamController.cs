@@ -67,6 +67,22 @@ namespace SpotCC.Controllers
             return GetPlayCountByDateRangeAndArtist(name, firstDay, lastDay);
         }
 
+        [HttpPost("[action]")]
+        public IEnumerable<ChartDownload> DateRange(ChartDownloadModel model)
+        {
+            if (model == null)
+            {
+                return null;
+            }
+            bool isWindows = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows);
+            var asiaTimeZone = isWindows ? TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time") : TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
+
+            var from = TimeZoneInfo.ConvertTimeFromUtc(model.From, asiaTimeZone).Date;
+            var to = TimeZoneInfo.ConvertTimeFromUtc(model.To, asiaTimeZone).Date;
+
+            return GetPlayCountByCustomDateRangeAndArtist(model.Name, from, to);
+        }
+
         [HttpGet("[action]")]
         public IEnumerable<AccountStream> Monthly()
         {
@@ -140,6 +156,24 @@ namespace SpotCC.Controllers
             return accountStreams;
         }
 
+        private IEnumerable<ChartDownload> GetPlayCountByCustomDateRangeAndArtist(string artistName, DateTime from, DateTime? to = null)
+        {
+            Expression<Func<PlayCount, bool>> predicate = p => p.ArtistName == artistName && p.Date >= from;
+            if (to.HasValue)
+            {
+                predicate = p => p.ArtistName == artistName && p.Date >= from && p.Date <= to;
+            }
+
+            var playCounts = _repository.Get(predicate);
+            var accountStreams = playCounts.OrderBy(i => i.Date).Select(g => new ChartDownload()
+                            {
+                                Day = g.Date.ToString(),
+                                Downloads = g.Delta,
+                            });
+
+            return accountStreams;
+        }
+
         public class AccountStream
         {
             public string Account { get; set; }
@@ -151,6 +185,19 @@ namespace SpotCC.Controllers
         {
             public int Streams { get; set; }
             public string Day { get; set; }
+        }
+
+        public class ChartDownload
+        {
+            public string Day { get; set; }
+            public int Downloads { get; set; }
+        }
+
+        public class ChartDownloadModel
+        {
+            public DateTime From { get; set; }
+            public DateTime To { get; set; }
+            public string Name { get; set; }
         }
     }
 }
