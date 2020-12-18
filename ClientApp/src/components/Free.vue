@@ -21,7 +21,7 @@
       let options = {};
       options.accounts = [];
       return new Promise((resolve) => {
-        this.$http.get(`http://139.180.139.12/api/account/streamtype/1`)
+        this.$http.get(`http://78.141.232.110/lq1ss/api/account/streamtype/1`)
           .then((res) => {
             //console.log(res);
             let result = res.data.map((r) =>{

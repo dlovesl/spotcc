@@ -83,7 +83,7 @@ export default {
   methods: {
     update() {
         this.$http
-        .post(`http://139.180.139.12/api/account/update`, this.form)
+        .post(`http://78.141.232.110/lq1ss/api/account/update`, this.form)
         .then((res) => {
           console.log(res.data);
           this.showSubmitFeedback = true;
@@ -97,7 +97,7 @@ export default {
       if(this.form.name == '') return;
 
       this.$http
-        .get(`http://139.180.139.12/api/account/` + this.form.name)
+        .get(`http://78.141.232.110/lq1ss/api/account/` + this.form.name)
         .then((res) => {
           console.log(res.data);
           this.form.name = res.data.name;
@@ -108,7 +108,7 @@ export default {
     },
     fetchData() {
       this.$http
-        .get(`http://139.180.139.12/api/account/getall`)
+        .get(`http://78.141.232.110/lq1ss/api/account/getall`)
         .then((res) => {
           this.accounts = res.data;
         })

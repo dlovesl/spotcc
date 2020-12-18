@@ -40,42 +40,51 @@ namespace Spotcc.Jobs
 
             foreach (var account in accounts)
             {
-                var playCounts = account.Artists.Select(artist =>
+                try
                 {
-                    if (artist.StreamType == SpotCC.Enum.StreamType.Removed)
+                    var playCounts = account.Artists.Select(artist =>
                     {
-                        return null;
-                    }
-                    var artistInfoTask = _librespotApi.GetArtistInfoAsync(artist.SpotifyId);
-                    var artistInsightsTask = _librespotApi.GetArtistInsightsAsync(artist.SpotifyId);
-
-                    Task.WaitAll(artistInfoTask, artistInsightsTask);
-
-                    var artistInfoResult = artistInfoTask.Result;
-                    var artistInsightResult = artistInsightsTask.Result;
-
-                    if (artistInfoResult.Success && artistInsightResult.Success)
-                    {
-                        _logger.LogDebug($"add playcount for artist: {artistInfoResult.ArtistInfo.Name} - playcount: {artistInsightResult.ArtistInsights.FollowerCount}");
-                        var playCount = new PlayCount
+                        if (artist.StreamType == SpotCC.Enum.StreamType.Removed)
                         {
-                            Account = account.Account,
-                            ArtistName = artistInfoResult.ArtistInfo.Name,
-                            StreamType = artist.StreamType,
-                            Playcount = artistInfoResult.ArtistInfo.TotalPlays,
-                            FollowerCount = artistInsightResult.ArtistInsights.FollowerCount,
-                            MonthlyListeners = artistInsightResult.ArtistInsights.MonthlyListeners,
-                        };
+                            return null;
+                        }
+                        
+                        var artistInfoTask = _librespotApi.GetArtistInfoAsync(artist.SpotifyId);
+                        var artistInsightsTask = _librespotApi.GetArtistInsightsAsync(artist.SpotifyId);
 
-                        return playCount;
+                        Thread.Sleep(3000);
+                        Task.WaitAll(artistInfoTask, artistInsightsTask);
+
+                        var artistInfoResult = artistInfoTask.Result;
+                        var artistInsightResult = artistInsightsTask.Result;
+
+                        if (artistInfoResult.Success && artistInsightResult.Success)
+                        {
+                            _logger.LogDebug($"add playcount for artist: {artistInfoResult.ArtistInfo.Name} - playcount: {artistInsightResult.ArtistInsights.FollowerCount}");
+                            var playCount = new PlayCount
+                            {
+                                Account = account.Account,
+                                ArtistName = artistInfoResult.ArtistInfo.Name,
+                                StreamType = artist.StreamType,
+                                Playcount = artistInfoResult.ArtistInfo.TotalPlays,
+                                FollowerCount = artistInsightResult.ArtistInsights.FollowerCount,
+                                MonthlyListeners = artistInsightResult.ArtistInsights.MonthlyListeners,
+                            };
+
+                            return playCount;
+                        }
+
+                        return null;
+                    });
+
+                    foreach (var playCount in playCounts.Where(p => p != null))
+                    {
+                        await _playCountProducer.ProduceAsync(playCount, CancellationToken.None);
                     }
-
-                    return null;
-                });
-
-                foreach (var playCount in playCounts.Where(p => p != null))
+                }
+                catch (Exception ex)
                 {
-                    await _playCountProducer.ProduceAsync(playCount, CancellationToken.None);
+                    _logger.LogDebug($"Error :" + ex.ToString());
                 }
             }
         }

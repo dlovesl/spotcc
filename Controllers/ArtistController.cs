@@ -50,7 +50,14 @@ namespace SpotCC.Controllers
         [HttpGet("getall")]
         public IEnumerable<Artist> GetAllArtists()
         {
-            var artist = _artistRepo.GetAll();
+            var artist = _artistRepo.GetAll().OrderBy(x => x.Name);
+            return artist;
+        }
+
+        [HttpGet("getactive")]
+        public IEnumerable<Artist> GetAllActiveArtists()
+        {
+            var artist = _artistRepo.GetAll().Where(x => x.StreamType != Enum.StreamType.Removed).OrderBy(x => x.Name);
             return artist;
         }
 
@@ -65,6 +72,7 @@ namespace SpotCC.Controllers
         public IActionResult CreateArtist(Artist artist)
         {
             var error = string.Empty;
+            artist.AccountId = 1;
             if (artist == null)
             {
                 error = $"Parameter '{nameof(artist)}' should not be null.";
@@ -76,7 +84,16 @@ namespace SpotCC.Controllers
                 error = $"Account with Id: '{artist.AccountId}' is not existed.";
             } else if (GetArtist(artist.Id) != null || GetArtist(artist.SpotifyId) != null)
             {
-                error = $"Artist with Id: '{ artist.Id }' - SpotifyId: '{ artist.SpotifyId?? string.Empty }' is already existed.";
+                var artistDB = GetArtist(artist.SpotifyId);
+                if (artistDB.StreamType == Enum.StreamType.Removed)
+                {
+                    artistDB.StreamType = Enum.StreamType.Pre;
+                    return UpdateArtist(artistDB);
+                }
+                else
+                {
+                    error = $"Artist with Id: '{ artist.Id }' - SpotifyId: '{ artist.SpotifyId ?? string.Empty }' is already existed.";
+                }
             }
 
             if (!string.IsNullOrEmpty(error))
@@ -93,6 +110,7 @@ namespace SpotCC.Controllers
         public IActionResult UpdateArtist(Artist artist)
         {
             var error = string.Empty;
+            artist.AccountId = 1;
             if (artist == null)
             {
                 error = $"Parameter '{nameof(artist)}' should not be null.";

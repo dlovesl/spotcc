@@ -34,7 +34,7 @@ export default {
   methods: {
     fetchData() {
       this.$http
-        .get(`http://139.180.139.12/api/accountstream/lastweek`)
+        .get(`http://78.141.232.110/lq1ss/api/accountstream/lastweek`)
         .then((res) => {
           this.data = res.data;
         })

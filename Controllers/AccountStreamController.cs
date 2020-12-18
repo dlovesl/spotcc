@@ -74,13 +74,11 @@ namespace SpotCC.Controllers
             {
                 return null;
             }
-            bool isWindows = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows);
-            var asiaTimeZone = isWindows ? TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time") : TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
-
-            var from = TimeZoneInfo.ConvertTimeFromUtc(model.From, asiaTimeZone).Date;
-            var to = TimeZoneInfo.ConvertTimeFromUtc(model.To, asiaTimeZone).Date;
-
-            return GetPlayCountByCustomDateRangeAndArtist(model.Name, from, to);
+            if (string.IsNullOrEmpty(model.Name))
+            {
+                return GetPlayCountByCustomDateRange(model.From, model.To);
+            }
+            return GetPlayCountByCustomDateRangeAndArtist(model.Name, model.From, model.To);
         }
 
         [HttpGet("[action]")]
@@ -170,6 +168,24 @@ namespace SpotCC.Controllers
                                 Day = g.Date.ToString(),
                                 Downloads = g.Delta,
                             });
+
+            return accountStreams;
+        }
+
+        private IEnumerable<ChartDownload> GetPlayCountByCustomDateRange(DateTime from, DateTime? to = null)
+        {
+            Expression<Func<PlayCount, bool>> predicate = p => p.Date >= from;
+            if (to.HasValue)
+            {
+                predicate = p => p.Date >= from && p.Date <= to;
+            }
+
+            var playCounts = _repository.Get(predicate);
+            var accountStreams = playCounts.GroupBy(s => s.Date).OrderBy(x => x.Key).Select(g => new ChartDownload()
+            {
+                Day = g.Key.Date.ToString(),
+                Downloads = g.Sum(i => i.Delta),
+            });
 
             return accountStreams;
         }

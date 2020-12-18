@@ -1,22 +1,14 @@
 <template>
   <section class="demo">
     <header class="demo__header">
-      <h1>SpotCC Trend Chart</h1>
+      <h1>Spot Trend Chart</h1>
     </header>
      <div class="ht-nagivation">
-      <router-link to="/">Home</router-link>
+      <router-link to="/">Stats</router-link>
       <span class="ht-icon">|</span>
-      <router-link to="/pre">PRE</router-link>
+      <router-link to="/pre">Summary</router-link>
       <span class="ht-icon">|</span>
-      <router-link to="/free">FREE</router-link>
-      <span class="ht-icon">|</span>
-      <router-link to="/chart">Monthly Stats</router-link>
-      <span class="ht-icon">|</span>
-      <router-link to="/customchart">Custom Stats</router-link>
-      <span class="ht-icon">|</span>
-      <router-link to="/artist">Modify Artist</router-link>
-      <span class="ht-icon">|</span>
-      <router-link to="/account">Modify Account</router-link>
+      <router-link to="/artist">Manage Artist</router-link>
     </div>
     <main class="demo__examples">
       <div class="demo__example">
@@ -158,5 +150,8 @@ body {
 .ht-nagivation .ht-icon {
   padding-left: 20px;
   padding-right: 20px;
+}
+.demo__header{
+  font-size: 50px;
 }
 </style>

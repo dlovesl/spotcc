@@ -1,41 +1,33 @@
 <template>
   <div class="single-artist">
-    <div class="control margin-bottom">
-        <div class="select">
-            <select v-model="accountId" @change="onAccountChange()">
-                <option disabled value="">Please select account</option>
-                <option v-for="acc in accounts" :key="acc.id" :value="acc.id">
-                    {{acc.name}}
-                </option>
-            </select>
-        </div>       
-    </div>
-    <!-- <v-select v-model="selected" v-on:change="onChange($event)" 
-        :options="options" :reduce="t => t.name" label="name" :value="selected" @input="onChange"
-        placeholder="Please select an Artist">
-    </v-select> -->
-    <v-select v-model="selected"
-        :options="options" :reduce="t => t.name" label="name" :value="selected"
-        placeholder="Please select an Artist">
-      <!-- <option disabled value="">Please select one</option>
-        <option v-for="option in options" :key="option.id" v-bind:value="option.name">
-          {{ option.name }}
-        </option> -->
-    </v-select>
-    <!-- <span>Selected: {{ selected }}</span> -->
-    <input class="button is-primary margin-bottom margin-top" type="submit" @click.prevent="onChange" value="Get Stats"/>
+    <div class="columns">
+          <div class="column">
+            <v-select v-model="selected"
+              :options="options" :reduce="t => t.name" label="name" :value="selected"
+              placeholder="Please select an Artist">
+            <!-- <option disabled value="">Please select one</option>
+              <option v-for="option in options" :key="option.id" v-bind:value="option.name">
+                {{ option.name }}
+              </option> -->
+          </v-select>
+          </div>
+           <div class="column">
+             <b-field>
+                <b-datepicker
+                    placeholder="Click to select date range"
+                    v-model="dates"
+                    range>
+                </b-datepicker>
+            </b-field>
+          </div>
+          <div class="column">
+              <input class="button is-primary" type="submit" @click.prevent="onChange" value="Submit"/>
+          </div>
+      </div>
     <!-- <label class="label">Total Streams: {{this.totalStreams}}</label> -->
     <div>
   <div class="vtc-downloads">
-    <div class="container">
-      <b-field label="Select a date range">
-          <b-datepicker
-              placeholder="Click to select..."
-              v-model="dates"
-              range>
-          </b-datepicker>
-      </b-field>
-    </div>
+
     <div class="vtc-downloads-controls">
       <div class="vtc-downloads-control">
       </div>
@@ -71,8 +63,6 @@ export default {
       options: [],
       accountId:'',
       totalStreams: 0,
-      selectMonth: 0,
-      selectYear: 0,
       accounts: [],
       downloads: null,
       dateFormat: "DD/MM",
@@ -95,7 +85,7 @@ export default {
     onAccountChange() {
       console.log(this.accountId);
       this.$http
-        .get(`http://139.180.139.12/api/artist/account/` + this.accountId)
+        .get(`http://78.141.232.110/lq1ss/api/artist/account/` + this.accountId)
         .then((res) => {
           this.options = res.data;
           this.selected = '';
@@ -105,10 +95,10 @@ export default {
     onChange() {
       console.log(this.selected);
       console.log(this.dates);
-      if(this.selected == '' || this.dates == null) return;
+      if(this.dates == null) return;
       const pdata = { from: this.dates[0], to: this.dates[1], name:  this.selected};
       axios
-        .post(`http://139.180.139.12/api/accountstream/DateRange`, pdata)
+        .post(`http://78.141.232.110/lq1ss/api/accountstream/DateRange`, pdata)
         .then(res => {
           console.log(res);
           //const { downloads } = res.data;
@@ -124,9 +114,10 @@ export default {
     },
     fetchData() {
       this.$http
-        .get(`http://139.180.139.12/api/account/getall`)
+        .get(`http://78.141.232.110/lq1ss/api/artist/getall`)
         .then((res) => {
-          this.accounts = res.data;
+          this.options = res.data;
+          this.selected = '';
         })
         .catch((error) => console.log(error));
     }
@@ -153,6 +144,10 @@ export default {
 }
 .margin-left {
   margin-left: 5px;
+}
+
+.vs__dropdown-toggle{
+  height: 40px;
 }
 
 * {

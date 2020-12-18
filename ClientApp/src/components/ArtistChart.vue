@@ -110,7 +110,7 @@ export default {
     onAccountChange() {
       console.log(this.accountId);
       this.$http
-        .get(`http://139.180.139.12/api/artist/account/` + this.accountId)
+        .get(`http://78.141.232.110/lq1ss/api/artist/account/` + this.accountId)
         .then((res) => {
           this.options = res.data;
           this.selected = '';
@@ -121,7 +121,7 @@ export default {
       console.log(this.selected);
       if(this.selected == '') return;
       this.$http
-        .get(`http://139.180.139.12/api/accountstream/MonthAndYear?name=` + this.selected + "&month=" + this.selectMonth + "&year=" + this.selectYear)
+        .get(`http://78.141.232.110/lq1ss/api/accountstream/MonthAndYear?name=` + this.selected + "&month=" + this.selectMonth + "&year=" + this.selectYear)
         .then((res) => {
           this.data = res.data;
           if(res.data[0]){
@@ -132,7 +132,7 @@ export default {
     },
     fetchData() {
       this.$http
-        .get(`http://139.180.139.12/api/account/getall`)
+        .get(`http://78.141.232.110/lq1ss/api/account/getall`)
         .then((res) => {
           this.accounts = res.data;
         })

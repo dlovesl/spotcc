@@ -1,64 +1,41 @@
 <template>
   <section id="app" class="section">
-      <h1 class="title is-1">
-          Add/Edit Artist
-      </h1>
-
       <div class="columns">
           <div class="column">
-              <form>
-                  <div class="field">
-                      <label class="label">Input Artist Name To Search</label>
-                      <div class="control margin-bottom">
-                          <input class="input" type="text" v-model="form.searchArtist" />
-                      </div>
-                      <div class="control">
-                           <input class="button is-primary" type="submit" value="Get Artist" @click.prevent="getArtist"/>
-                      </div>
-                  </div>
+              <form class="margin-bottom">
+                <b-field grouped label="Total steam you bought" :label-position="labelPosition">
+                  <b-input placeholder="total stream..." v-model="form.totalStream"></b-input>
+                  <p class="control">
+                      <button class="button is-primary"  @click.prevent="accountUpdate">Update</button>
+                  </p>
+                </b-field>
+                <b-field grouped>
+                  <b-field grouped label="Artist Name" :label-position="labelPosition">
+                    <b-input type="text" v-model="form.name"></b-input>
+                  </b-field>
 
-                  <div class="field">
-                      <label class="label">Stream Type</label>
-                      <div class="control">
-                          <div class="select">
-                              <select v-model="form.streamType">
-                                  <option v-for="color in [{txt:'Pre', val: 0}, {txt:'Free', val: 1}, {txt:'Removed', val: 2}]" :key="color.val" :value="color.val">
-                                      {{color.txt}}
-                                  </option>
-                              </select>
-                          </div>
-                      </div>
-                  </div>
+                  <b-field grouped label="Artist Id" :label-position="labelPosition">
+                      <b-input type="text" v-model="form.spotifyId"></b-input>
+                  </b-field>
 
-                  <div class="field">
-                      <label class="label">Account</label>
-                      <div class="control">
-                          <div class="select">
-                              <select v-model="form.accountId">
-                                  <option v-for="acc in accounts" :key="acc.id" :value="acc.id">
-                                      {{acc.name}}
-                                  </option>
-                              </select>
-                          </div>
-                      </div>
-                  </div>
-
-                  <div class="field">
-                      <label class="label">Artist Name</label>
-                      <div class="control margin-bottom">
-                          <input class="input" type="text" v-model="form.name" />
-                      </div>
-                  </div>
-
-                  <div class="field">
-                      <label class="label">Artist Id</label>
-                      <div class="control margin-bottom">
-                          <input class="input" type="text" v-model="form.spotifyId" />
-                      </div>
-                  </div>
-
-                  <input class="button is-primary margin-bottom" type="submit" @click.prevent="update" value="Update"/>
                   <input class="button is-primary margin-bottom margin-left" type="submit" @click.prevent="add" value="Add"/>
+                </b-field>
+                <div class="columns">
+                  <div class="column">
+                    <label class="label">Your artist list: </label>
+                    <select class="lstbox"
+                            size="8"
+                            v-model="form.artistId">
+                            <option v-for="acc in artists" :key="acc.spotifyId" :value="acc.spotifyId">
+                                {{acc.name}}
+                            </option>
+                    </select>
+                  </div>
+                  <div class="column center-btn">
+                      <input class="button is-primary margin-bottom margin-left" type="submit" @click.prevent="update" value="Remove"/>
+                  </div>
+                </div>
+               
               </form>
 
               <transition name="fade" mode="out-in">
@@ -71,12 +48,6 @@
                       </div>
                   </article>
               </transition>
-          </div>
-          <div class="column">
-              <h5>
-                  JSON
-              </h5>
-              <pre><code>{{form}}</code></pre>
           </div>
       </div>
 
@@ -92,15 +63,16 @@ export default {
   data() {
     return {
       form: {
-            searchArtist: "",
+            totalStream: "",
             name: "",
             spotifyId: "",
-            accountId: 1,
+            artistId: "",
             streamType: 0,
             id:0
         },
       showSubmitFeedback: false,
-      accounts: [],
+      artists: [],
+      labelPosition: 'on-border'
     };
   },
   computed: {
@@ -117,53 +89,62 @@ export default {
     },
   },
   methods: {
-    add() {
-        this.form.id = 0;
+    accountUpdate() {
+      if(this.form.totalStream < 1) return;
         this.$http
-        .post(`http://139.180.139.12/api/artist/create`, this.form)
+        .post(`http://78.141.232.110/lq1ss/api/account/updateStream?stream=` + this.form.totalStream)
         .then((res) => {
           console.log(res.data);
           this.showSubmitFeedback = true;
           setTimeout(() => {
             this.showSubmitFeedback = false;
+        }, 3000);
+        })
+        .catch((error) => console.log(error));
+    },
+    add() {
+      if(this.form.name == '' || this.form.spotifyId == '') return;
+        this.form.id = 0;
+        this.$http
+        .post(`http://78.141.232.110/lq1ss/api/artist/create`, this.form)
+        .then((res) => {
+          console.log(res.data);
+          this.showSubmitFeedback = true;
+          setTimeout(() => {
+            this.showSubmitFeedback = false;
+            this.updateList();
         }, 3000);
         })
         .catch((error) => console.log(error));
     },
     update() {
+      console.log(this.form.artistId);
+      if(this.form.artistId == '') return;
         this.$http
-        .post(`http://139.180.139.12/api/artist/update`, this.form)
+        .post(`http://78.141.232.110/lq1ss/api/artist/remove/` + this.form.artistId)
         .then((res) => {
           console.log(res.data);
           this.showSubmitFeedback = true;
           setTimeout(() => {
             this.showSubmitFeedback = false;
+            this.form.artistId = "";
+            this.updateList();
         }, 3000);
         })
         .catch((error) => console.log(error));
     },
-    getArtist() {
-      if(this.form.searchArtist == '') return;
 
+    updateList() {
       this.$http
-        .get(`http://139.180.139.12/api/artist/name/` + this.form.searchArtist)
+        .get(`http://78.141.232.110/lq1ss/api/artist/getactive`)
         .then((res) => {
-          console.log(res.data);
-          this.form.name = res.data.name;
-          this.form.accountId = res.data.accountId;
-          this.form.spotifyId = res.data.spotifyId;
-          this.form.streamType = res.data.streamType;
-          this.form.id = res.data.id;
+          this.artists = res.data;
         })
         .catch((error) => console.log(error));
     },
+
     fetchData() {
-      this.$http
-        .get(`http://139.180.139.12/api/account/getall`)
-        .then((res) => {
-          this.accounts = res.data;
-        })
-        .catch((error) => console.log(error));
+      this.updateList();
     },
   },
   mounted() {
@@ -173,6 +154,24 @@ export default {
 </script>
 
 <style lang="scss">
+.column .center-btn {
+  display: flex;
+  align-items: center;
+}
+
+.lstbox {
+  width: 100% ;
+}
+
+.lstbox option {
+    font-weight: normal;
+    display: block;
+    white-space: pre;
+    min-height: 1.2em;
+    padding: 0.5em 1em;
+    font-size: 1rem;
+}
+
 .margin-bottom {
   margin-bottom: 15px;
 }

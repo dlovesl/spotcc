@@ -84,5 +84,29 @@ namespace SpotCC.Controllers
             var result = _accountRepo.UpdateParentOnly(currentAccount);
             return CreatedAtAction(nameof(UpdateAccount), new { result }, result);
         }
+
+        [HttpPost("updateStream")]
+        public IActionResult UpdateAccountStream(int stream)
+        {
+            var error = string.Empty;
+
+            var currentAccount = GetAllAccounts().FirstOrDefault();
+
+            if (currentAccount == null)
+            {
+                error = $"Account didn't existed.";
+            }
+            if (!string.IsNullOrEmpty(error))
+            {
+                _logger.LogDebug(error);
+                return BadRequest(new { error });
+            }
+
+            //fill data
+            currentAccount.OrderPreStreams = stream;
+
+            var result = _accountRepo.UpdateParentOnly(currentAccount);
+            return CreatedAtAction(nameof(UpdateAccount), new { result }, result);
+        }
     }
 }

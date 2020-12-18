@@ -105,7 +105,7 @@ export default {
   },
   created() {
     let baseUrl =
-      "http://139.180.139.12/api/Artist/spotify/";
+      "http://78.141.232.110/lq1ss/api/Artist/spotify/";
 
     let t = this.accounts.map(async (a) => {
       let info = {};
