@@ -143,11 +143,8 @@ namespace SpotCC
 
             JobStorage.Current.GetMonitoringApi().PurgeProcessingJobs();
 
-            bool isWindows = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows);
-            var asiaTimeZone = isWindows ? TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time") : TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
-
             BackgroundJob.Enqueue<IPlayCountConsumer>(consumer => consumer.ListenAsync(CancellationToken.None));
-            RecurringJob.AddOrUpdate<PlayCountProducerJob>(job => job.RunAsync(), Cron.Daily(5), asiaTimeZone);
+            RecurringJob.AddOrUpdate<PlayCountProducerJob>(job => job.RunAsync(), Cron.Daily());
         }
     }
 }
