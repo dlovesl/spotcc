@@ -167,7 +167,12 @@ namespace SpotCC.Controllers
                             {
                                 Day = g.Date.ToString(),
                                 Downloads = g.Delta,
-                            });
+                            }).ToList();
+
+            if (accountStreams.Count == 1)
+            {
+                accountStreams.Add(accountStreams.First());
+            }
 
             return accountStreams;
         }
@@ -182,10 +187,15 @@ namespace SpotCC.Controllers
 
             var playCounts = _repository.Get(predicate);
             var accountStreams = playCounts.GroupBy(s => s.Date).OrderBy(x => x.Key).Select(g => new ChartDownload()
+                                        {
+                                            Day = g.Key.Date.ToString(),
+                                            Downloads = g.Sum(i => i.Delta),
+                                        }).ToList();
+
+            if (accountStreams.Count == 1)
             {
-                Day = g.Key.Date.ToString(),
-                Downloads = g.Sum(i => i.Delta),
-            });
+                accountStreams.Add(accountStreams.First());
+            }
 
             return accountStreams;
         }

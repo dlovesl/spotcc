@@ -13,7 +13,7 @@ namespace Spotcc.Services.Models
             //var asiaTimeZone = isWindows ? TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time") : TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh");
 
             //Date = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, asiaTimeZone).Date;
-            Date = DateTime.Now.Date;
+            Date = DateTime.UtcNow.Date;
             Delta = 0;
         }
 
