@@ -1,10 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import Login from './components/Login.vue'
 import Pre from './components/Pre.vue'
-import Free from './components/Free.vue'
-import ArtistChart from './components/ArtistChart.vue'
 import AddEditArtist from './components/AddEditArtist.vue'
-import AddEditAccount from './components/AddEditAccount.vue'
 import ArtistDownloadChart from './components/ArtistDownloadChart.vue'
 
 Vue.use(VueRouter)
@@ -12,10 +10,8 @@ Vue.use(VueRouter)
 export const router = new VueRouter({
     routes: [
         {path: '/pre', component: Pre},
-        {path: '/free', component: Free},
-        {path: '/chart', component: ArtistChart},
         {path: '/artist', component: AddEditArtist},
-        {path: '/account', component: AddEditAccount},
-        {path: '/', component: ArtistDownloadChart}
+        {path: '/stats', component: ArtistDownloadChart},
+        {path: '/', component: Login}
     ]
 })

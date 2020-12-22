@@ -1,10 +1,12 @@
 <template>
-  <section class="demo">
+<router-view/>
+
+  <!-- <section class="demo">
     <header class="demo__header">
       <h1>Spot Trend Chart</h1>
     </header>
      <div class="ht-nagivation">
-      <router-link to="/">Stats</router-link>
+      <router-link to="/stats">Stats</router-link>
       <span class="ht-icon">|</span>
       <router-link to="/pre">Summary</router-link>
       <span class="ht-icon">|</span>
@@ -21,7 +23,7 @@
     <footer class="demo__footer">
       Released under the SpotCC team license.
     </footer>
-  </section>
+  </section> -->
 </template>
 
 <script>
