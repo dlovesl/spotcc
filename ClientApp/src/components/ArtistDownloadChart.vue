@@ -4,7 +4,7 @@
           <div class="column">
             <v-select v-model="selected"
               :options="options" :reduce="t => t.name" label="name" :value="selected"
-              placeholder="Please select an Artist">
+              placeholder="Get all artists">
             <!-- <option disabled value="">Please select one</option>
               <option v-for="option in options" :key="option.id" v-bind:value="option.name">
                 {{ option.name }}
@@ -95,8 +95,15 @@ export default {
     onChange() {
       console.log(this.selected);
       console.log(this.dates);
-      if(this.dates == null) return;
-      const pdata = { from: this.dates[0], to: this.dates[1], name:  this.selected};
+      let pdata;
+      if(this.dates == null)
+      {
+        pdata = { from: null, to: null, name:  this.selected};
+      }
+      else{
+        pdata = { from: this.dates[0].toDateString(), to: this.dates[1].toDateString(), name:  this.selected};
+      }
+      
       Api()
         .post(`/accountstream/DateRange`, pdata)
         .then(res => {

@@ -76,11 +76,13 @@ namespace SpotCC.Controllers
             {
                 return null;
             }
+            var from = string.IsNullOrEmpty(model.From) ? (DateTime?)null : DateTime.Parse(model.From);
+            var to = string.IsNullOrEmpty(model.To) ? (DateTime?)null : DateTime.Parse(model.To);
             if (string.IsNullOrEmpty(model.Name))
             {
-                return GetPlayCountByCustomDateRange(model.From, model.To);
+                return GetPlayCountByCustomDateRange(from, to);
             }
-            return GetPlayCountByCustomDateRangeAndArtist(model.Name, model.From, model.To);
+            return GetPlayCountByCustomDateRangeAndArtist(model.Name, from, to);
         }
 
         [HttpGet("[action]")]
@@ -156,12 +158,19 @@ namespace SpotCC.Controllers
             return accountStreams;
         }
 
-        private IEnumerable<ChartDownload> GetPlayCountByCustomDateRangeAndArtist(string artistName, DateTime from, DateTime? to = null)
+        private IEnumerable<ChartDownload> GetPlayCountByCustomDateRangeAndArtist(string artistName, DateTime? from, DateTime? to = null)
         {
             Expression<Func<PlayCount, bool>> predicate = p => p.ArtistName == artistName && p.Date >= from;
-            if (to.HasValue)
+            if (from == null && to == null)
             {
-                predicate = p => p.ArtistName == artistName && p.Date >= from && p.Date <= to;
+                predicate = p => p.ArtistName == artistName;
+            }
+            else
+            {
+                if (to.HasValue)
+                {
+                    predicate = p => p.ArtistName == artistName && p.Date >= from && p.Date <= to;
+                }
             }
 
             var playCounts = _repository.Get(predicate);
@@ -179,12 +188,19 @@ namespace SpotCC.Controllers
             return accountStreams;
         }
 
-        private IEnumerable<ChartDownload> GetPlayCountByCustomDateRange(DateTime from, DateTime? to = null)
+        private IEnumerable<ChartDownload> GetPlayCountByCustomDateRange(DateTime? from, DateTime? to = null)
         {
             Expression<Func<PlayCount, bool>> predicate = p => p.Date >= from;
-            if (to.HasValue)
+            if (from == null && to == null)
             {
-                predicate = p => p.Date >= from && p.Date <= to;
+                predicate = null;
+            }
+            else
+            {
+                if (to.HasValue)
+                {
+                    predicate = p => p.Date >= from && p.Date <= to;
+                }
             }
 
             var playCounts = _repository.Get(predicate);
@@ -223,8 +239,8 @@ namespace SpotCC.Controllers
 
         public class ChartDownloadModel
         {
-            public DateTime From { get; set; }
-            public DateTime To { get; set; }
+            public string From { get; set; }
+            public string To { get; set; }
             public string Name { get; set; }
         }
     }
