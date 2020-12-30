@@ -12,6 +12,7 @@ export const router = new VueRouter({
         {path: '/pre', component: Pre},
         {path: '/artist', component: AddEditArtist},
         {path: '/stats', component: ArtistDownloadChart},
-        {path: '/', component: Login}
+        {path: '/', component: ArtistDownloadChart, name: 'home'},
+        {path: '/login', component: Login}
     ]
 })

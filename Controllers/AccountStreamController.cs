@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Spotcc.Services;
 using Spotcc.Services.Models;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace SpotCC.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class AccountStreamController : ControllerBase
@@ -203,20 +205,20 @@ namespace SpotCC.Controllers
         public class AccountStream
         {
             public string Account { get; set; }
-            public float TotalStreams { get; set; }
+            public long TotalStreams { get; set; }
             public IEnumerable<StreamInfo> StreamInfos { get; set; }
         }
 
         public class StreamInfo
         {
-            public int Streams { get; set; }
+            public long Streams { get; set; }
             public string Day { get; set; }
         }
 
         public class ChartDownload
         {
             public string Day { get; set; }
-            public int Downloads { get; set; }
+            public long Downloads { get; set; }
         }
 
         public class ChartDownloadModel

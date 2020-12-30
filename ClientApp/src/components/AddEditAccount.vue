@@ -63,6 +63,7 @@
 <script>
 
 import "vue-select/dist/vue-select.css";
+import Api from "../services/api";
 
 export default {
   components: {  },
@@ -82,8 +83,8 @@ export default {
   },
   methods: {
     update() {
-        this.$http
-        .post(`http://78.141.232.110/lq1ss/api/account/update`, this.form)
+        Api()
+        .post(`/account/update`, this.form)
         .then((res) => {
           console.log(res.data);
           this.showSubmitFeedback = true;
@@ -96,8 +97,8 @@ export default {
     onChange() {
       if(this.form.name == '') return;
 
-      this.$http
-        .get(`http://78.141.232.110/lq1ss/api/account/` + this.form.name)
+      Api()
+        .get(`/account/` + this.form.name)
         .then((res) => {
           console.log(res.data);
           this.form.name = res.data.name;
@@ -107,8 +108,8 @@ export default {
         .catch((error) => console.log(error));
     },
     fetchData() {
-      this.$http
-        .get(`http://78.141.232.110/lq1ss/api/account/getall`)
+      Api()
+        .get(`/account/getall`)
         .then((res) => {
           this.accounts = res.data;
         })

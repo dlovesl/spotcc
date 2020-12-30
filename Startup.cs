@@ -1,6 +1,8 @@
 using Hangfire;
 using Hangfire.Dashboard;
 using Hangfire.Storage.SQLite;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -20,8 +22,10 @@ using Spotcc.Services.Models;
 using SpotCC.Filters;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Channels;
+using System.Threading.Tasks;
 using VueCliMiddleware;
 
 namespace SpotCC
@@ -77,6 +81,28 @@ namespace SpotCC
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                      .AddCookie(options =>
+                      {
+                          options.ExpireTimeSpan = TimeSpan.FromDays(1);
+                          options.LoginPath = "/login";
+                          options.SlidingExpiration = true;
+                          options.Events.OnValidatePrincipal = context =>
+                          {
+                              var expiredDateClaim = context.Principal.Claims.First(c => c.Type == "expired_date");
+                              if (DateTime.TryParse(expiredDateClaim?.Value, out var expiredDate))
+                              {
+                                  if (expiredDate >= DateTime.UtcNow)
+                                  {
+                                      return Task.CompletedTask;
+                                  }
+                              }
+
+                              context.RejectPrincipal();
+                              return Task.CompletedTask;
+                          };
+                      });
+
             var jsonSetting = new JsonSerializerSettings()
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
@@ -98,6 +124,7 @@ namespace SpotCC
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseHealthChecks("/hc");
+            app.UseAuthentication();
 
             if (env.IsDevelopment())
             {
@@ -147,4 +174,22 @@ namespace SpotCC
             RecurringJob.AddOrUpdate<PlayCountProducerJob>(job => job.RunAsync(), Cron.Daily());
         }
     }
+
+    //public class RevokeAuthenticationEvents : CookieAuthenticationEvents
+    //{
+    //    public override Task ValidatePrincipal(CookieValidatePrincipalContext context)
+    //    {
+    //        var expiredDateClaim = context.Principal.Claims.First(c => c.Type == "expired_date");
+    //        if (DateTime.TryParse(expiredDateClaim?.Value, out var expiredDate))
+    //        {
+    //            if (expiredDate >= DateTime.UtcNow)
+    //            {
+    //                return Task.CompletedTask;
+    //            }
+    //        }
+
+    //        context.RejectPrincipal();
+    //        return Task.CompletedTask;
+    //    }
+    //}
 }

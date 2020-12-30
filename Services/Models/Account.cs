@@ -15,9 +15,13 @@ namespace Spotcc.Services.Models
         [Indexed]
         public string Name { get; set; }
 
-        public int TotalStreams { get; set; }
-        public int OrderPreStreams { get; set; }
-        public int OrdeFreeStreams { get; set; }
+        public string Token { get; set; }
+        public DateTime ExpiredDate { get; set; }
+        public bool Enable { get; set; }
+
+        public long TotalStreams { get; set; }
+        public long OrderPreStreams { get; set; }
+        public long OrdeFreeStreams { get; set; }
 
         [OneToMany(CascadeOperations = CascadeOperation.All)]
         public List<Artist> Artists { get; set; }

@@ -1,39 +1,62 @@
 <template>
-<router-view/>
-
-  <!-- <section class="demo">
-    <header class="demo__header">
-      <h1>Spot Trend Chart</h1>
-    </header>
-     <div class="ht-nagivation">
-      <router-link to="/stats">Stats</router-link>
-      <span class="ht-icon">|</span>
-      <router-link to="/pre">Summary</router-link>
-      <span class="ht-icon">|</span>
-      <router-link to="/artist">Manage Artist</router-link>
-    </div>
-    <main class="demo__examples">
-      <div class="demo__example">
-        <div class="demo__example-container">
-          
-          <router-view/>
-        </div>
+  <div style="height:100%;">
+    <router-view v-if="!isAuthenticated"/>
+    <section v-if="isAuthenticated" class="demo">
+      <header class="demo__header">
+        <h1>Spot Trend Chart</h1>
+      </header>
+      <div class="ht-nagivation">
+        <router-link to="/stats">Stats</router-link>
+        <span class="ht-icon">|</span>
+        <router-link to="/pre">Summary</router-link>
+        <span class="ht-icon">|</span>
+        <router-link to="/artist">Manage Artist</router-link>
       </div>
-    </main>
-    <footer class="demo__footer">
-      Released under the SpotCC team license.
-    </footer>
-  </section> -->
+      <main class="demo__examples">
+        <div class="demo__example">
+          <div class="demo__example-container">
+            <router-view/>
+          </div>
+        </div>
+      </main>
+      <footer class="demo__footer">
+        Released under the SpotCC team license.
+      </footer>
+    </section>
+  </div>  
 </template>
 
 <script>
-//import FrameworksDownloads from "./components/FrameworksDownloads";
+import authService from "./services/authentication";
 
 export default {
   name: "app",
-  components: {
-    //FrameworksDownloads,
+  data() {
+    return {
+      isAuthenticated: false
+    }
   },
+  mounted() {
+    this.isAuthenticated = authService.isAuthenticated();
+  },  
+  watch: {
+    '$route' (to, from) {
+      if(from.path === '/login'){
+        this.isAuthenticated = true;
+        let user = JSON.parse(localStorage.getItem("user"));
+        if(user.message) {
+          this.$buefy.notification.open({
+                    duration: 5000,
+                    message: user.message,
+                    type: 'is-warning',
+                    hasIcon: true
+                });
+        }
+      } else if (to.path === '/login'){
+        this.isAuthenticated = false;
+      }
+    }
+  }
 };
 </script>
 

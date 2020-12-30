@@ -57,6 +57,7 @@
 <script>
 
 import "vue-select/dist/vue-select.css";
+import Api from "../services/api";
 
 export default {
   components: {  },
@@ -91,8 +92,8 @@ export default {
   methods: {
     accountUpdate() {
       if(this.form.totalStream < 1) return;
-        this.$http
-        .post(`http://78.141.232.110/lq1ss/api/account/updateStream?stream=` + this.form.totalStream)
+        Api()
+        .post(`/account/updateStream?stream=` + this.form.totalStream)
         .then((res) => {
           console.log(res.data);
           this.showSubmitFeedback = true;
@@ -105,8 +106,8 @@ export default {
     add() {
       if(this.form.name == '' || this.form.spotifyId == '') return;
         this.form.id = 0;
-        this.$http
-        .post(`http://78.141.232.110/lq1ss/api/artist/create`, this.form)
+        Api()
+        .post(`/artist/create`, this.form)
         .then((res) => {
           console.log(res.data);
           this.showSubmitFeedback = true;
@@ -120,8 +121,8 @@ export default {
     update() {
       console.log(this.form.artistId);
       if(this.form.artistId == '') return;
-        this.$http
-        .post(`http://78.141.232.110/lq1ss/api/artist/remove/` + this.form.artistId)
+        Api()
+        .post(`/artist/remove/` + this.form.artistId)
         .then((res) => {
           console.log(res.data);
           this.showSubmitFeedback = true;
@@ -135,8 +136,8 @@ export default {
     },
 
     updateList() {
-      this.$http
-        .get(`http://78.141.232.110/lq1ss/api/artist/getactive`)
+      Api()
+        .get(`/artist/getactive`)
         .then((res) => {
           this.artists = res.data;
         })

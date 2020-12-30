@@ -11,6 +11,8 @@
 
 <script>
 import Framework from "./Framework.vue";
+import Api from "../services/api";
+
 export default {
   components: { Framework },
   data() {
@@ -33,8 +35,8 @@ export default {
   },
   methods: {
     fetchData() {
-      this.$http
-        .get(`http://78.141.232.110/lq1ss/api/accountstream/lastweek`)
+      Api()
+        .get(`/accountstream/lastweek`)
         .then((res) => {
           this.data = res.data;
         })

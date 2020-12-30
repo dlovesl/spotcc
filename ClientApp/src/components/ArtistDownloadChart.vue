@@ -50,9 +50,9 @@
 
 <script>
 //import ChartDownload from "./ChartDownload.vue";
-import axios from "axios";
 import moment from 'moment';
 import "vue-select/dist/vue-select.css";
+import Api from "../services/api";
 
 export default {
   components: {  },
@@ -84,8 +84,8 @@ export default {
   methods: {
     onAccountChange() {
       console.log(this.accountId);
-      this.$http
-        .get(`http://78.141.232.110/lq1ss/api/artist/account/` + this.accountId)
+      Api()
+        .get(`/artist/account/` + this.accountId)
         .then((res) => {
           this.options = res.data;
           this.selected = '';
@@ -97,8 +97,8 @@ export default {
       console.log(this.dates);
       if(this.dates == null) return;
       const pdata = { from: this.dates[0], to: this.dates[1], name:  this.selected};
-      axios
-        .post(`http://78.141.232.110/lq1ss/api/accountstream/DateRange`, pdata)
+      Api()
+        .post(`/accountstream/DateRange`, pdata)
         .then(res => {
           console.log(res);
           //const { downloads } = res.data;
@@ -113,22 +113,16 @@ export default {
       this.onChange();
     },
     fetchData() {
-      this.$http
-        .get(`http://78.141.232.110/lq1ss/api/artist/getall`)
+      Api()
+        .get(`/artist/getall`)
         .then((res) => {
           this.options = res.data;
           this.selected = '';
         })
         .catch((error) => console.log(error));
     }
-  },
-  watch: {
-    //   selectedDateRange() {
-    //   this.onChange();
-    // }
-  },
+  },  
   mounted() {
-    //this.selectedDateRange = this.dateRanges[0];
     this.fetchData();
   }
 };

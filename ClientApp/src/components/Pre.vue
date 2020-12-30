@@ -4,6 +4,8 @@
 
 <script>
   import PlayCount from "./PlayCount.vue";
+  import Api from "../services/api";
+
   export default {
     components: {
        PlayCount 
@@ -21,7 +23,8 @@
       let options = {};
       options.accounts = [];
       return new Promise((resolve) => {
-        this.$http.get(`http://78.141.232.110/lq1ss/api/account/streamtype/0`)
+        Api()
+          .get(`/account/streamtype/0`)
           .then((res) => {
             //console.log(res);
             let result = res.data.map((r) =>{

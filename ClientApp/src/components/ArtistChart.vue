@@ -57,6 +57,7 @@
 <script>
 import Framework from "./Framework.vue";
 import "vue-select/dist/vue-select.css";
+import Api from "../services/api";
 
 export default {
   components: { Framework },
@@ -109,8 +110,8 @@ export default {
   methods: {
     onAccountChange() {
       console.log(this.accountId);
-      this.$http
-        .get(`http://78.141.232.110/lq1ss/api/artist/account/` + this.accountId)
+      Api()
+        .get(`/artist/account/` + this.accountId)
         .then((res) => {
           this.options = res.data;
           this.selected = '';
@@ -120,8 +121,8 @@ export default {
     onChange() {
       console.log(this.selected);
       if(this.selected == '') return;
-      this.$http
-        .get(`http://78.141.232.110/lq1ss/api/accountstream/MonthAndYear?name=` + this.selected + "&month=" + this.selectMonth + "&year=" + this.selectYear)
+      Api()
+        .get(`/accountstream/MonthAndYear?name=` + this.selected + "&month=" + this.selectMonth + "&year=" + this.selectYear)
         .then((res) => {
           this.data = res.data;
           if(res.data[0]){
@@ -131,12 +132,11 @@ export default {
         .catch((error) => console.log(error));
     },
     fetchData() {
-      this.$http
-        .get(`http://78.141.232.110/lq1ss/api/account/getall`)
-        .then((res) => {
-          this.accounts = res.data;
-        })
-        .catch((error) => console.log(error));
+      Api().get(`/account/getall`)
+          .then((res) => {
+            this.accounts = res.data;
+          })
+        .catch((error) => console.log(error));      
     },
   },
   mounted() {

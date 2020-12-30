@@ -2,9 +2,9 @@
 <div id="login-section">
   <div id="login">
     <div id="form">
-      <form @submit.prevent="doLogin">
+      <form @submit.prevent="login">
         <label for="email">TOKEN</label>
-        <input type="text" id="email" v-model="email" placeholder="input your token" autocomplete="off">
+        <input type="text" id="token" v-model="token" placeholder="input your token">
         <div style="text-align:center;">
           <button type="submit">Log in</button>
         </div>
@@ -17,32 +17,32 @@
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 
 <script>
-import axios from "axios";
 import moment from 'moment';
 import "vue-select/dist/vue-select.css";
+import authService from "../services/authentication";
 
 export default {
   components: {  },
   data() {
     return {
-      email: '',
-      password: '',
-      hidePassword: true
+      token: ''
     };
   },
-  computed: {
-      passwordType() {
-        return this.hidePassword ? 'password' : 'text'
-      },
-      passwordIcon() {
-        return this.hidePassword ? 'fa-eye' : 'fa-eye-slash'
-      }
-    },
-      methods: {
-      doLogin() {
-        alert('Not implemented yet :O')
-      }
+  methods: {
+    login() {
+      authService.login(this.token)
+            .then(res => {
+              localStorage.setItem("user", JSON.stringify(res.data));
+              this.$router.push({ path: "/" });
+            })
+            .catch(err => {
+              this.$buefy.toast.open({
+                    message: 'Token is incorrect, please try again!',
+                    type: 'is-danger'
+                });              
+            });
     }
+  }
 };
   
 </script>

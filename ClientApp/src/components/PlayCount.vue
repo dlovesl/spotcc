@@ -64,7 +64,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from 'axios';
+import Api from "../services/api";
 
 export default {
   name: "PlayCount",
@@ -104,15 +105,12 @@ export default {
     },
   },
   created() {
-    let baseUrl =
-      "http://78.141.232.110/lq1ss/api/Artist/spotify/";
-
     let t = this.accounts.map(async (a) => {
       let info = {};
       info.name = a.name;
       info.totalStreams = a.totalStreams;
       let artistInfoRequests = a.artists.map((artistId) => {
-        return axios.get(baseUrl.replace("{apiPath}", "artistInfo") + artistId);
+        return Api().get(`/artist/spotify/` + artistId);
       });
 
       return axios.all(artistInfoRequests).then(

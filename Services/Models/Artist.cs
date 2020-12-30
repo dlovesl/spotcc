@@ -21,7 +21,7 @@ namespace Spotcc.Services.Models
         //[ManyToOne]
         //public Account Account { get; set; }
 
-        public int TotalStreams { get; set; }
+        public long TotalStreams { get; set; }
         public int MonthlyListeners { get; set; }
         public int FollowerCount { get; set; }
         public StreamType StreamType { get; set; }
