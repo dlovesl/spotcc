@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -99,6 +100,10 @@ namespace SpotCC
                               }
 
                               context.RejectPrincipal();
+                              return Task.CompletedTask;
+                          };
+                          options.Events.OnRedirectToLogin = context => {
+                              context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                               return Task.CompletedTask;
                           };
                       });

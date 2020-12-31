@@ -36,7 +36,7 @@
     <trend-chart v-if="dataset" :datasets="[{data: dataset}]" :labels="{
         xLabels: xLabels,
         yLabels: 7,
-        yLabelsTextFormatter: val =>Math.round(val)
+        yLabelsTextFormatter: val => formatPrice(Math.round(val))
       }" :min="0" :grid="{
         verticalLines: true,
         verticalLinesNumber: 5,
@@ -82,6 +82,10 @@ export default {
     }
   },
   methods: {
+    formatPrice(value) {
+      let val = (value / 1).toFixed(0).replace(".", ",");
+      return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
     onAccountChange() {
       console.log(this.accountId);
       Api()
@@ -201,7 +205,7 @@ body {
   }
 
   .x-labels .label {
-    font-size: 8px;
+    font-size: 8px;    
   }
 }
 </style>
